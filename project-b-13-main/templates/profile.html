@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+  <h1>Your Profile <span class="eco-badge">Sustainable Member</span></h1>
+
+  <div class="profile-info">
+    {% if user.profile_images %}
+    <img src="{{ user.profile_images.url }}" alt="Profile Picture"
+      style="width:150px;height:150px;border-radius:50%;object-fit:cover;margin-bottom:1rem;">
+    {% else %}
+    <p><em>No profile picture uploaded yet.</em></p>
+    {% endif %}
+
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Display Name:</strong> {{ user.get_display_name }}</p>
+    <p><strong>Member Type:</strong> <span class="user-type">{{ user.get_user_type_display }}</span></p>
+    <p><strong>Bio:</strong> {{ user.bio|default:"Share your sustainability story..." }}</p>
+    <p><strong>Phone:</strong> {{ user.phone|default:"Not provided" }}</p>
+
+    <div style="margin-top: 1rem; padding: 1rem; background: #fff3e0; border-radius: 5px;">
+      <p style="margin:0;"><strong>Rating:</strong>
+        {% if user.get_average_rating %}
+        <span style="color: #f57c00; font-weight: bold;">{{ user.get_average_rating }} ★</span>
+        <span style="color: #666; font-size: 0.9em;">({{ user.get_review_count }} reviews)</span>
+        {% else %}
+        <span style="color: #999;">No ratings yet</span>
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  {% if user.reviews_received.exists %}
+  <div style="margin-top: 2rem;">
+    <h3>Recent Reviews</h3>
+    <div style="display: grid; gap: 1rem;">
+      {% for review in user.reviews_received.all|slice:":5" %}
+      <div style="border: 1px solid #eee; padding: 1rem; border-radius: 5px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <strong>{{ review.reviewer.get_display_name }}</strong>
+          <span style="color: #f57c00;">{{ review.rating }}/5 ★</span>
+        </div>
+        <p style="margin: 0; color: #555;">{{ review.comment }}</p>
+        <small style="color: #999;">{{ review.created_at|date:"M d, Y" }}</small>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <form method="POST" enctype="multipart/form-data" style="margin-top:2rem;">
+    {% csrf_token %}
+
+    <label for="nickname"><strong>Nickname / Handle (optional):</strong></label><br>
+    <input type="text" name="nickname" id="nickname" value="{{ user.nickname }}" placeholder="e.g., EcoWarrior"
+      style="width:100%;margin-bottom:1rem;padding:8px;border:1px solid #ddd;border-radius:4px;"><br>
+
+    <label for="profile_image"><strong>Update Profile Picture:</strong></label><br>
+    <input type="file" name="profile_image" id="profile_image" accept="image/*" style="margin-bottom:1rem;"><br>
+
+    <label for="bio"><strong>Update Bio:</strong></label><br>
+    <textarea name="bio" id="bio" rows="3" style="width:100%;margin-bottom:1rem;">{{ user.bio }}</textarea><br>
+
+    <label for="phone"><strong>Update Phone:</strong></label><br>
+    <input type="text" name="phone" id="phone" value="{{ user.phone }}" style="width:100%;margin-bottom:1rem;"><br>
+
+    <button type="submit"
+      style="background-color:#4caf50;color:white;padding:0.6rem 1rem;border:none;border-radius:5px;cursor:pointer;">
+      Save Changes
+    </button>
+  </form>
+
+  <div style="margin-top: 2rem; padding: 1.5rem; background: #f5f5f5; border-radius: 10px;">
+    <h3 style="color: #4caf50;">🌱 Your Sustainability Impact</h3>
+    <p>As a member of Re-Ground Exchange, you're contributing to:</p>
+    <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+    </ul>
+  </div>
+</div>
+{% endblock %}

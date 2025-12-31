@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}New Message{% endblock %}
+
+{% block content %}
+<h1>Start New Conversation</h1>
+{% if messages %}
+  {% for message in messages %}
+    <p style="color:red;">{{ message }}</p>
+  {% endfor %}
+{% endif %}
+<form method="post" style="max-width: 500px;">
+    {% csrf_token %}
+    
+    <div style="margin-bottom: 15px;">
+        <label for="id_email">Recipient Email:</label>
+        <input type="email" name="email" id="id_email" required 
+               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+               placeholder="Enter their UVA email">
+    </div>
+    
+    <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Start Conversation
+    </button>
+    
+    <a href="{% url 'messaging:inbox' %}" style="margin-left: 10px; padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">
+        Cancel
+    </a>
+</form>
+{% endblock %}

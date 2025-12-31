@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="'card">
+    <h2>Transaction Complete</h2>
+    <p><strong>Item:</strong> {{ transaction.item.title }}</p>
+    <p><strong>Buyer:</strong> {{ transaction.buyer.username }}</p>
+    <p><strong>Seller:</strong> {{ transaction.seller.username }}</p>
+    <p><strong>Price:</strong> ${{ transaction.price }}</p>
+
+    <form method="post" style="margin-top: 1.5rem;">
+        {% csrf_token %}
+        <button type="submit" class="btn-primary">Mark as Completed</button>
+        <a href="{%url 'marketplace:my_transactions'%}"style="margin-left: 1rem;">Cancel</a>
+    </form>
+</div>
+{% endblock %}  

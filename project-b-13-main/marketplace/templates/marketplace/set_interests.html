@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+  <h2>My Interests</h2>
+  <p>Select the categories you’re most interested in so we can surface better listings.</p>
+
+  <form method="post" style="margin-top:1.5rem;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn-primary">Save Interests</button>
+  </form>
+</div>
+{% endblock %}

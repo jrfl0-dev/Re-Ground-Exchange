@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+<h1>My Messages</h1>
+
+<a href="{% url 'messaging:new' %}" style="display:inline-block;padding:10px 15px;background:#007bff;color:#fff;text-decoration:none;border-radius:5px;margin-bottom:20px;">
+    Start New Conversation
+</a>
+
+{% if convos %}
+    <div style="border:1px solid #ddd;border-radius:5px;">
+        {% for convo in convos %}
+            <div style="padding:15px;border-bottom:1px solid #eee;">
+                <a href="{% url 'messaging:detail' convo.id %}" style="text-decoration:none;color:#333;">
+                    {% for person in convo.participants.all %}
+                        {% if person != request.user %}
+                            <strong>{{ person.get_display_name }}</strong><br>
+                        {% endif %}
+                    {% endfor %}
+                    {% if convo.messages.last %}
+                        <small style="color:#666;">{{ convo.messages.last.body|truncatewords:12 }}</small><br>
+                        <small style="color:#999;">{{ convo.messages.last.created_at|date:"M d, Y g:i A" }}</small>
+                    {% endif %}
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No messages yet. Start a conversation to get started!</p>
+{% endif %}
+{% endblock %}

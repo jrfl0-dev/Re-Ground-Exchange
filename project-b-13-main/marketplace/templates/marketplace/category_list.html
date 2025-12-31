@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+  <h2>Categories</h2>
+
+  <ul style="margin-top:1rem; list-style:none;">
+    {% for category in categories %}
+      <li style="margin:0.4rem 0;">
+        {{ category.name }}
+        <span style="color:#666;">({{ category.items.count }} items)</span>
+      </li>
+    {% empty %}
+      <li>No categories available yet.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

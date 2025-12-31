@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>My Listings</h1>
+    <a href="{% url 'marketplace:create_item' %}" class="btn-primary">+ List New Item</a>
+  </div>
+
+  {% if items %}
+  <div style="display: grid; gap: 1.5rem;">
+    {% for item in items %}
+    <div style="border: 1px solid #e0e0e0; border-radius: 10px; padding: 1.5rem;">
+      <div style="display: grid; grid-template-columns: 100px 1fr auto; gap: 1rem; align-items: center;">
+        {% if item.images.first %}
+        <img src="{{ item.images.first.image.url }}" alt="{{ item.title }}"
+             style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
+        {% else %}
+        <div style="width: 100px; height: 100px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; border-radius: 5px;">
+          <span style="color: #999;">No Image</span>
+        </div>
+        {% endif %}
+
+        <div>
+          <h3 style="margin: 0 0 0.5rem 0;">
+            <a href="{% url 'marketplace:item_detail' item.pk %}" style="text-decoration: none; color: inherit;">
+              {{ item.title }}
+            </a>
+          </h3>
+          <p style="color: #4caf50; font-weight: bold; margin: 0.5rem 0;">${{ item.price }}</p>
+          <p style="color: #666; margin: 0.5rem 0;">
+            Status: <span style="padding: 2px 8px; background:
+                            {% if item.status == 'available' %}#4caf50
+                            {% elif item.status == 'pending' %}#ff9800
+                            {% else %}#f44338
+                            {% endif %};
+                            color: white; border-radius: 10px; font-size: 0.8rem;">
+                            {{ item.get_status_display }}
+                        </span>
+          </p>
+          <small style="color: #999;">Listed {{ item.created_at|timesince }} ago</small>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; flex-direction: column;">
+          <a href="{% url 'marketplace:item_detail' item.pk %}" style="padding: 6px 12px; background: #4caf50; color: white; text-decoration: none; border-radius: 5px; font-size: 0.9rem; text-align: center;">
+            View
+          </a>
+          <a href="{% url 'marketplace:edit_item' item.pk %}" style="padding: 6px 12px; background: #2196f3; color: white; text-decoration: none; border-radius: 5px; font-size: 0.9rem; text-align: center;">
+            Edit
+          </a>
+          <a href="{% url 'marketplace:delete_item' item.pk %}" style="padding: 6px 12px; background: #f44336; color: white; text-decoration: none; border-radius: 5px; font-size: 0.9rem; text-align: center;">
+            Delete
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align: center; padding: 3rem;">
+    <h3 style="color: #666;">You haven't listed any items yet</h3>
+    <p>Start by listing your first item!</p>
+    <a href="{% url 'marketplace:create_item' %}" class="btn-primary">List Your First Item</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

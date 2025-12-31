@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card" style=>
+    <h2>Leave a Review</h2>
+    
+    <p><strong>Item:</strong> {{ transaction.item.title }}</p>
+    <p><strong>Reviewing:</strong> {{ reviewee.username }}</p>
+
+    <form method="post" style="margin-top:1.5rem;">
+       {% csrf_token %}
+       {{ form.as_p }}
+    <button type="submit" class="btn-primary">Submit Review</button>
+    <a href="{% url 'marketplace:my_transactions' %}" style="margin-left:1rem;">Cancel</a>
+    </form>
+</div>
+{% endblock %}

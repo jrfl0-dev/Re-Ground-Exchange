@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+  <h1>Edit Listing: {{ item.title }}</h1>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div style="display: grid; gap: 1.5rem;">
+      <div>
+        <h3>Item Details</h3>
+        <div style="display: grid; gap: 1rem;">
+
+          <div>
+            <label for="{{ form.title.id_for_label }}">Title *</label>
+            {{ form.title }}
+          </div>
+
+          <div>
+            <label for="{{ form.description.id_for_label }}">Description *</label>
+            {{ form.description }}
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label for="{{ form.price.id_for_label }}">Price ($) *</label>
+              {{ form.price }}
+            </div>
+            <div>
+              <label for="{{ form.condition.id_for_label }}">Condition *</label>
+              {{ form.condition }}
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label for="{{ form.category.id_for_label }}">Category *</label>
+              {{ form.category }}
+            </div>
+            <div>
+              <label for="{{ form.location.id_for_label }}">Meetup Location</label>
+              {{ form.location }}
+            </div>
+          </div>
+
+          <!-- Status removed because ItemForm does not include it -->
+
+        </div>
+      </div>
+
+      {% if item.images.all %}
+      <div>
+        <h3>Current Images</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+          {% for image in item.images.all %}
+          <div style="text-align: center;">
+            <img src="{{ image.image.url }}" alt="Item image"
+                 style="width: 100%; height: 120px; object-fit: cover; border-radius: 5px;">
+            <label style="display: block; margin-top: 0.5rem;">
+              <input type="checkbox" name="delete_images" value="{{ image.id }}">
+              Delete
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div>
+        <h3>Add More Images</h3>
+        <div>
+          <label for="id_images">Upload Additional Images</label>
+          <input type="file" name="images" id="id_images" multiple accept="image/*">
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+      <button type="submit" class="btn-primary">Update Listing</button>
+      <a href="{% url 'marketplace:item_detail' item.pk %}" class="btn-secondary">Cancel</a>
+      <a href="{% url 'marketplace:delete_item' item.pk %}" class="btn-danger">Delete Listing</a>
+    </div>
+
+  </form>
+</div>
+{% endblock %}

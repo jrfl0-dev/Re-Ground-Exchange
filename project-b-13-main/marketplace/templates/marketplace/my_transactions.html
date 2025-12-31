@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+  <h2>My Transactions</h2>
+
+  {% if transactions %}
+    <table style="width:100%; margin-top:1rem; border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th style="text-align:left; padding:0.5rem;">Item</th>
+          <th style="text-align:left; padding:0.5rem;">Role</th>
+          <th style="text-align:left; padding:0.5rem;">Status</th>
+          <th style="text-align:left; padding:0.5rem;">Price</th>
+          <th style="text-align:left; padding:0.5rem;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in transactions %}
+          <tr>
+            <td style="padding:0.5rem;">
+              <a href="{% url 'marketplace:item_detail' t.item.id %}">
+                {{ t.item.title }}
+              </a>
+            </td>
+            <td style="padding:0.5rem;">
+              {% if t.buyer == request.user %}Buyer{% else %}Seller{% endif %}
+            </td>
+            <td style="padding:0.5rem;">{{ t.get_status_display }}</td>
+            <td style="padding:0.5rem;">${{ t.price }}</td>
+            <td style="padding:0.5rem;">
+              {% if t.status == 'pending' %}
+                <a href="{% url 'marketplace:complete_transaction' t.id %}">Complete</a>
+              {% endif %}
+              {% if t.status == 'completed' and not t.review %}
+                {% if t.buyer == request.user or t.seller == request.user %}
+                  <span style="margin:0 0.5rem;">|</span>
+                  <a href="{% url 'marketplace:leave_review' t.id %}">Leave review</a>
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p style="margin-top:1rem;">You have no transactions yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

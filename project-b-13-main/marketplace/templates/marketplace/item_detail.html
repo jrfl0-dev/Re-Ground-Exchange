@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    {# ===================== Images ===================== #}
+    <div>
+      {% with cover=item.images.first %}
+      {% if cover %}
+      <img src="{{ cover.image.url }}" alt="{{ item.title }}"
+        style="width: 100%; border-radius: 10px; margin-bottom: 1rem;">
+      {% if item.images.all|length > 1 %}
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;">
+        {% for image in item.images.all %}
+        <img src="{{ image.image.url }}" alt="{{ item.title }}"
+          style="width: 100%; height: 80px; object-fit: cover; border-radius: 5px;">
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% else %}
+      <div
+        style="width: 100%; height: 300px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+        <span style="color: #999;">No Image Available</span>
+      </div>
+      {% endif %}
+      {% endwith %}
+    </div>
+
+    {# ===================== Item Info ===================== #}
+    <div>
+      <h1 style="margin-bottom:.25rem;">{{ item.title }}</h1>
+
+      <div style="display:flex; align-items:center; gap:.5rem; margin:.25rem 0 1rem;">
+        <p style="font-size: 1.5rem; color: #4caf50; font-weight: bold; margin:0;">${{ item.price }}</p>
+        {% if item.status == 'reserved' %}
+        <span class="eco-badge" style="background:#ffcc80;">Reserved</span>
+        {% elif item.status == 'sold' %}
+        <span class="eco-badge" style="background:#ef9a9a;">Sold</span>
+        {% endif %}
+      </div>
+
+      <div style="margin: 1rem 0;">
+        <p><strong>Condition:</strong> {{ item.get_condition_display }}</p>
+        <p><strong>Category:</strong> {{ item.category.name|default:"Uncategorized" }}</p>
+        <p><strong>Location:</strong> 📍 {{ item.location|default:"Not specified" }}</p>
+        <p><strong>Seller:</strong> {{ item.seller.get_full_name|default:item.seller.email }}
+          {% if item.seller.get_average_rating %}
+          <span style="color: #f57c00; font-weight: bold; margin-left: 0.5rem;">{{ item.seller.get_average_rating }}
+            ★</span>
+          {% endif %}
+        </p>
+        <p><strong>Listed:</strong> {{ item.created_at|date:"M d, Y" }}</p>
+      </div>
+
+      <div style="margin: 1.5rem 0;">
+        <h3>Description</h3>
+        <p style="white-space: pre-line;">{{ item.description }}</p>
+      </div>
+
+      {# ===================== Actions / Status Logic ===================== #}
+      {% if item.status == 'available' %}
+      {% if user.is_authenticated %}
+      {% if user != item.seller %}
+      <a href="{% url 'marketplace:initiate_transaction' item.id %}" class="btn-primary">
+        💬 Message Seller &amp; Reserve
+      </a>
+      {% else %}
+      <p style="background:#e3f2fd; padding:1rem; border-radius:5px;">
+        This is your listing. You can edit or manage it from your dashboard.
+      </p>
+      {% endif %}
+      {% else %}
+      <p style="color:#666;">Sign in to buy this item.</p>
+      {% endif %}
+      {% elif item.status == 'reserved' %}
+      {% if latest_transaction %}
+      {# Show complete button to buyer or seller when pending #}
+      {% if latest_transaction.status == 'pending' %}
+      {% if user.is_authenticated and user == latest_transaction.buyer %}
+      <a href="{% url 'marketplace:complete_transaction' latest_transaction.pk %}" class="btn-primary">
+        Complete Transaction
+      </a>
+      <p style="margin-top:.5rem; color:#555;">You have this item reserved at ${{ latest_transaction.price }}.</p>
+      <form method="POST" action="{% url 'marketplace:cancel_transaction' latest_transaction.pk %}"
+        style="margin-top: 0.5rem;">
+        {% csrf_token %}
+        <button type="submit" class="btn-secondary"
+          style="background-color: #ef9a9a; color: #b71c1c; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer;">
+          Cancel Reservation
+        </button>
+      </form>
+      {% elif user.is_authenticated and user == latest_transaction.seller %}
+      <form method="POST" action="{% url 'marketplace:complete_transaction' latest_transaction.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-primary">
+          Mark as Completed
+        </button>
+      </form>
+      {% endif %}
+      {% endif %}
+      {% endif %}
+      {% elif item.status == 'sold' %}
+      <p style="background:#fdecea; padding:1rem; border-radius:5px; color:#b71c1c;">
+        This item has been sold.
+      </p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

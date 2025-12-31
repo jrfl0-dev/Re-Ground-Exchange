@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+  <h1>List New Item</h1>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div style="display: grid; gap: 1.5rem;">
+      <!-- Item Details -->
+      <div>
+        <h3>Item Details</h3>
+        <div style="display: grid; gap: 1rem;">
+          <div>
+            <label for="{{ item_form.title.id_for_label }}">Title *</label>
+            {{ item_form.title }}
+          </div>
+          <div>
+            <label for="{{ item_form.description.id_for_label }}">Description *</label>
+            {{ item_form.description }}
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label for="{{ item_form.price.id_for_label }}">Price ($) *</label>
+              {{ item_form.price }}
+            </div>
+            <div>
+              <label for="{{ item_form.condition.id_for_label }}">Condition *</label>
+              {{ item_form.condition }}
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label for="{{ item_form.category.id_for_label }}">Category *</label>
+              {{ item_form.category }}
+            </div>
+            <div>
+              <label for="{{ item_form.location.id_for_label }}">Meetup Location</label>
+              {{ item_form.location }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Images -->
+      <div>
+        <h3>Images</h3>
+        <div>
+          <label for="id_images">Upload Images</label>
+          <input type="file" name="images" id="id_images" multiple accept="image/*">
+          <small style="color: #666;">You can select multiple images. First image will be the cover photo.</small>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <button type="submit" class="btn-primary">List Item</button>
+      <a href="{% url 'marketplace:item_list' %}" style="margin-left: 10px; padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

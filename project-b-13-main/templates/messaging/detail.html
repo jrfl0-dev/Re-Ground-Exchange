@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Conversation</h2>
+<div>
+  {% for msg in messages %}
+    <div style="margin-bottom:12px;">
+      <strong>{{ msg.sender.get_display_name }}</strong>
+      <small>{{ msg.created_at }}</small>
+      <div>{{ msg.body|linebreaks }}</div>
+    </div>
+  {% endfor %}
+</div>
+
+<form method="post">{% csrf_token %}
+  {{ form.body }} <button type="submit">Send</button>
+</form>
+{% endblock %}
